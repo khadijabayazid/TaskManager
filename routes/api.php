@@ -19,8 +19,8 @@ Route::post('logout', [UserController::class, 'logout'])->middleware('auth:sanct
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('profile')->group(function () {
         Route::post('', [ProfileController::class, 'store']);
-        Route::get('/{id}', [ProfileController::class, 'show']);
-        Route::put('/{id}', [ProfileController::class, 'update']);
+        Route::get('', [ProfileController::class, 'show']);
+        Route::put('/', [ProfileController::class, 'update']);
     });
 
     Route::get('user/{id}/profile', [UserController::class, 'getProfile']);
