@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use League\CommonMark\Extension\TaskList\TaskListExtension;
 
 use function Pest\Laravel\json;
 
@@ -46,6 +47,12 @@ class TaskController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         $user = $task->user;
         return response()->json($user, 200);
+    }
+
+    public function getAllTasks()
+    {
+        $tasks = Task::all();
+        return response()->json($tasks, 200);
     }
 
     public function index()

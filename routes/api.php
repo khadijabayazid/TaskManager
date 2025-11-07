@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::apiResource('tasks', TaskController::class);
+    Route::get('task/all', [TaskController::class, 'getAllTasks'])->middleware('CheckUser');
 
 
     Route::get('task/{id}/user', [TaskController::class, 'getTaskUser']);
