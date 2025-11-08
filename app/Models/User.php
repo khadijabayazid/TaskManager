@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'age'
     ];
 
     /**
@@ -46,11 +48,18 @@ class User extends Authenticatable
             // 'password' => 'hashed',
         ];
     }
-    public function profile(){
+    public function profile()
+    {
         return $this->hasOne(Profile::class);
     }
 
-    public function tasks(){
+    public function tasks()
+    {
         return $this->hasMany(Task::class);
+    }
+
+    public function favoriteTasks()
+    {
+        return $this->belongsToMany(Task::class, 'favorites');
     }
 }

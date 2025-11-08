@@ -16,11 +16,18 @@ class Task extends Model
         'user_id'
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function categories(){
+    public function categories()
+    {
         return $this->belongsToMany(Category::class, 'category_task');
+    }
+
+    public function favoriteByUser()
+    {
+        return $this->belongsToMany(User::class, 'favorites');
     }
 }

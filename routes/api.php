@@ -29,10 +29,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('tasks', TaskController::class);
     Route::get('task/all', [TaskController::class, 'getAllTasks'])->middleware('CheckUser');
+    Route::get('task/ordered', [TaskController::class, 'getTaskByPriority']);
+
+
+    Route::post('task/{id}/favorite', [TaskController::class, 'addToFavorites']);
+    Route::delete('task/{id}/favorite', [TaskController::class, 'removeFromFavorites']);
+    Route::get('task/favorites', [TaskController::class, 'getFavoriteTasks']);
 
 
     Route::get('task/{id}/user', [TaskController::class, 'getTaskUser']);
-
     Route::post('tasks/{taskId}/categories', [TaskController::class, 'addCategoriesToTask']);
     Route::get('tasks/{tasksId}/categories', [TaskController::class, 'getTaskCategories']);
     Route::get('categories/{categoryId}/tasks', [TaskController::class], 'getCategoriesTasks');

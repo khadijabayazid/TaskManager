@@ -14,6 +14,27 @@ use function Pest\Laravel\json;
 
 class TaskController extends Controller
 {
+    public function addToFavorites($taskId)
+    {
+        Task::findOrFail($taskId);
+        Auth::user()->favoriteTasks()->syncWithoutDetaching($taskId);
+        return response()->json(['message' => 'Task added to favorites'], 200);
+    }
+    public function removeFromFavorites($taskId)
+    {
+        Task::findOrFail($taskId);
+        Auth::user()->favoriteTasks()->detach($taskId);
+        return response()->json(['message' => 'Task remove from favorites'], 200);
+    }
+    public function getFavoriteTasks()
+    {
+        $favorites = Auth::user()->favoriteTasks()->get();
+        return response()->json([
+            'message' => 'Favorite tasks retrieved successfully',
+            'data' => $favorites
+        ], 200);
+    }
+
     public function addCategoriesToTask(Request $request, $taskId)
     {
         $task = Task::findOrfail($taskId);
@@ -47,6 +68,25 @@ class TaskController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         $user = $task->user;
         return response()->json($user, 200);
+    }
+
+    public function getTaskByPriority(Request $request)
+    {
+        $order = $request->input('order', 'asc');
+        if (!in_array($order, ['asc', 'desc'])) {
+            $order = 'asc';
+        }
+        $priorityOrder = "FIELD(priority, 'high','medium','low')";
+
+        $tasks = Auth::user()
+            ->tasks()
+            ->orderByRaw("$priorityOrder" . ($order === 'desc'? 'DESC':'ASC'))
+            ->get();
+
+        return response()->json([
+            'order' => $order,
+            'data' => $tasks
+        ], 200);
     }
 
     public function getAllTasks()
