@@ -6,6 +6,8 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Category;
 use App\Models\Task;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use League\CommonMark\Extension\TaskList\TaskListExtension;
@@ -80,7 +82,7 @@ class TaskController extends Controller
 
         $tasks = Auth::user()
             ->tasks()
-            ->orderByRaw("$priorityOrder" . ($order === 'desc'? 'DESC':'ASC'))
+            ->orderByRaw("$priorityOrder" . ($order === 'desc' ? 'DESC' : 'ASC'))
             ->get();
 
         return response()->json([
@@ -132,11 +134,28 @@ class TaskController extends Controller
 
     public function destroy($id)
     {
-        $task = Task::findOrFail($id);
-        $user_id = Auth::id();
-        if ($task->user_id != $user_id)
-            return response()->json(['message' => 'Unauthorized'], 403);
-        $task->delete();
-        return response()->json(null, 204);
+        try 
+        {
+            $task = Task::findOrFail($id);
+            $user_id = Auth::id();
+            if ($task->user_id != $user_id)
+                return response()->json(['message' => 'Unauthorized'], 403);
+            $task->delete();
+            return response()->json('Task Deleted successfully', 200);
+        } 
+        catch(ModelNotFoundException $m)
+        {
+            return response()->json([
+                'error' => 'Task Not found',
+                'details' => $m->getMessage()
+            ], 404);
+        }
+        catch (Exception $m) 
+        {
+            return response()->json([
+                'error' => 'something went wrong while deleting the task',
+                'details' => $m->getMessage()
+            ], 404);
+        }
     }
 }
